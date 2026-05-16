@@ -1,23 +1,40 @@
 import "server-only";
-import Anthropic from "@anthropic-ai/sdk";
 import { ResumeData } from "./types";
 import { EMPTY_RESUME, CLAUDE_SYSTEM_PROMPT } from "./constants";
+
+const BASE_URL = process.env.LLM_BASE_URL || "https://dashscope.aliyuncs.com/compatible-mode/v1";
+const API_KEY = process.env.ANTHROPIC_API_KEY || "";
+const MODEL = process.env.LLM_MODEL || "qwen-plus";
 
 export async function parseResumeWithClaude(
   rawText: string
 ): Promise<{ data: ResumeData; warnings: string[] }> {
-  const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-
-  const response = await anthropic.messages.create({
-    model: "claude-sonnet-4-5-20250929",
-    max_tokens: 4096,
-    temperature: 0,
-    system: CLAUDE_SYSTEM_PROMPT,
-    messages: [{ role: "user", content: `请解析以下简历文本：\n\n${rawText}` }],
+  const response = await fetch(`${BASE_URL}/chat/completions`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${API_KEY}`,
+    },
+    body: JSON.stringify({
+      model: MODEL,
+      max_tokens: 4096,
+      temperature: 0,
+      messages: [
+        { role: "system", content: CLAUDE_SYSTEM_PROMPT },
+        { role: "user", content: `请解析以下简历文本：\n\n${rawText}` },
+      ],
+    }),
   });
 
-  const text =
-    response.content[0].type === "text" ? response.content[0].text : "";
+  if (!response.ok) {
+    const errText = await response.text().catch(() => "");
+    throw new Error(`LLM API 调用失败 (${response.status}): ${errText.slice(0, 200)}`);
+  }
+
+  const json = await response.json() as {
+    choices: Array<{ message: { content: string } }>;
+  };
+  const text = json.choices?.[0]?.message?.content || "";
 
   // Extract JSON from response
   const jsonMatch =
@@ -81,24 +98,22 @@ function mergeWithDefaults(
 function fallbackRegexParse(rawText: string): ResumeData {
   const data = structuredClone(EMPTY_RESUME);
 
-  // Email
   const emailMatch = rawText.match(
     /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/
   );
   if (emailMatch) data.basics.email = emailMatch[0];
 
-  // Phone (Chinese mobile)
-  const phoneMatch = rawText.match(
-    /1[3-9]\d[-]?\d{4}[-]?\d{4}/
-  );
+  const phoneMatch = rawText.match(/1[3-9]\d[-]?\d{4}[-]?\d{4}/);
   if (phoneMatch) data.basics.phone = phoneMatch[0];
 
-  // First non-empty line as name
   const lines = rawText.split("\n").filter((l) => l.trim());
   if (lines.length > 0) {
     const firstLine = lines[0].trim();
-    // If first line is short and not an email/phone, treat as name
-    if (firstLine.length <= 20 && !firstLine.includes("@") && !/^\d/.test(firstLine)) {
+    if (
+      firstLine.length <= 20 &&
+      !firstLine.includes("@") &&
+      !/^\d/.test(firstLine)
+    ) {
       data.basics.name = firstLine.replace(/简历|个人简历/g, "").trim();
     }
   }
