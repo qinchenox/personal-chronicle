@@ -18,6 +18,7 @@ interface ResumeStore {
   setWarnings: (warnings: string[]) => void;
 
   updateBasics: (field: keyof ResumeBasics, value: string) => void;
+  setTheme: (themeId: string) => void;
 
   addSkillCategory: () => void;
   removeSkillCategory: (id: string) => void;
@@ -152,6 +153,9 @@ export const useResumeStore = create<ResumeStore>()(
             ),
           },
         })),
+
+      setTheme: (themeId) =>
+        set((s) => ({ data: { ...s.data, themeId } })),
 
       reset: () => set({ data: EMPTY_RESUME, status: "empty", error: null, warnings: [] }),
     }),

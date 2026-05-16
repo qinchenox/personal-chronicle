@@ -1,4 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { writeFileSync, existsSync, mkdirSync } from "fs";
+import { join } from "path";
+import { nanoid } from "nanoid";
 import { generatePortfolioHTML } from "@/lib/html-generator";
 import { ResumeData } from "@/lib/types";
 import { z } from "zod";
@@ -66,26 +69,28 @@ export async function POST(request: NextRequest) {
 
     if (!parsed.success) {
       return NextResponse.json(
-        { error: "无效的简历数据", details: parsed.error.flatten() },
+        { error: "无效的简历数据" },
         { status: 400 }
       );
     }
 
     const html = generatePortfolioHTML(parsed.data);
-    const name = parsed.data.basics.name || "个人主页";
-    const safeName = encodeURIComponent(`${name}-个人主页.html`);
+    const id = nanoid(10);
+    const publicDir = join(process.cwd(), "public", "p");
+    if (!existsSync(publicDir)) {
+      mkdirSync(publicDir, { recursive: true });
+    }
+    writeFileSync(join(publicDir, `${id}.html`), html, "utf-8");
 
-    return new NextResponse(html, {
-      status: 200,
-      headers: {
-        "Content-Type": "text/html; charset=utf-8",
-        "Content-Disposition": `attachment; filename*=UTF-8''${safeName}`,
-      },
-    });
+    const host = request.headers.get("host") || "localhost:3000";
+    const protocol = host.includes("localhost") ? "http" : "https";
+    const url = `${protocol}://${host}/p/${id}.html`;
+
+    return NextResponse.json({ success: true, url, id });
   } catch (error) {
-    console.error("Generate HTML error:", error);
+    console.error("Deploy error:", error);
     return NextResponse.json(
-      { error: "HTML 生成失败，请稍后重试。" },
+      { error: "部署失败，请稍后重试。" },
       { status: 500 }
     );
   }

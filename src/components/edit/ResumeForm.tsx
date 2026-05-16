@@ -7,6 +7,45 @@ import { ExperienceSection } from "./sections/ExperienceSection";
 import { EducationSection } from "./sections/EducationSection";
 import { ProjectsSection } from "./sections/ProjectsSection";
 import { useResumeStore } from "@/store/resume-store";
+import { THEMES, DEFAULT_THEME_ID } from "@/lib/themes";
+
+function ThemeSelector() {
+  const themeId = useResumeStore((s) => s.data.themeId);
+  const setTheme = useResumeStore((s) => s.setTheme);
+
+  return (
+    <section className="space-y-3">
+      <h3 className="text-lg font-semibold text-neutral-800">风格主题</h3>
+      <p className="text-sm text-neutral-400">AI 根据岗位自动匹配，也可手动切换</p>
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+        {Object.values(THEMES).map((t) => (
+          <button
+            key={t.id}
+            onClick={() => setTheme(t.id)}
+            className={`text-left p-3 rounded-lg border-2 transition-all text-sm ${
+              themeId === t.id
+                ? "border-neutral-800 bg-neutral-50"
+                : "border-neutral-200 hover:border-neutral-300"
+            }`}
+          >
+            <div className="flex items-center gap-2 mb-1">
+              <span
+                className="w-4 h-4 rounded-full border"
+                style={{ backgroundColor: t.colors.accent }}
+              />
+              <span
+                className="w-4 h-4 rounded-full"
+                style={{ backgroundColor: t.colors.bgPrimary, border: "1px solid #e5e5e5" }}
+              />
+            </div>
+            <span className="font-medium text-neutral-800">{t.name}</span>
+            <span className="block text-xs text-neutral-400 mt-0.5">{t.description.slice(0, 20)}</span>
+          </button>
+        ))}
+      </div>
+    </section>
+  );
+}
 
 export function ResumeForm() {
   const router = useRouter();
@@ -73,6 +112,8 @@ function FormContent() {
       )}
 
       <div className="space-y-10">
+        <ThemeSelector />
+        <hr className="border-neutral-200" />
         <BasicsSection />
         <hr className="border-neutral-200" />
         <ExperienceSection />

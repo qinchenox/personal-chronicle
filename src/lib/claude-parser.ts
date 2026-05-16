@@ -1,6 +1,7 @@
 import "server-only";
 import { ResumeData } from "./types";
 import { EMPTY_RESUME, CLAUDE_SYSTEM_PROMPT } from "./constants";
+import { detectTheme } from "./themes";
 
 const BASE_URL = process.env.LLM_BASE_URL || "https://dashscope.aliyuncs.com/compatible-mode/v1";
 const API_KEY = process.env.ANTHROPIC_API_KEY || "";
@@ -91,6 +92,10 @@ function mergeWithDefaults(
   merged.certifications = Array.isArray(parsed.certifications)
     ? parsed.certifications
     : [];
+
+  // Auto-detect theme based on title, summary, and skills
+  const allSkills = merged.skills.flatMap((s) => s.items);
+  merged.themeId = detectTheme(merged.basics.title, merged.basics.summary, allSkills);
 
   return merged;
 }

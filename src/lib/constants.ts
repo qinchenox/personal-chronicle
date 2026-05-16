@@ -17,6 +17,7 @@ export const EMPTY_RESUME: ResumeData = {
   projects: [],
   languages: [],
   certifications: [],
+  themeId: "tech-light",
 };
 
 export const CLAUDE_SYSTEM_PROMPT = `你是一位专业的简历解析专家。你的任务是从简历文本中提取结构化信息。

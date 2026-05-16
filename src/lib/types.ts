@@ -63,6 +63,7 @@ export interface ResumeData {
   projects: ProjectEntry[];
   languages: LanguageEntry[];
   certifications: CertificationEntry[];
+  themeId: string;
 }
 
 export interface ParseResponse {
