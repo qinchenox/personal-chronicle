@@ -121,8 +121,6 @@ function HeroSection({ onStart }: { onStart: () => void }) {
 function UploadModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const status = useResumeStore((s) => s.status);
   const hasData = status === "ready";
-  const agentId = useResumeStore((s) => s.agentId);
-  const setAgentId = useResumeStore((s) => s.setAgentId);
   const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -153,10 +151,6 @@ function UploadModal({ open, onClose }: { open: boolean; onClose: () => void }) 
         <div className="text-center mb-8">
           <h2 className="text-2xl font-bold mb-2" style={{color:"#1e293b"}}>开始创建</h2>
           <p className="text-sm" style={{color:"#94a3b8"}}>选择 AI 风格，上传简历，即刻生成</p>
-        </div>
-
-        <div className="mb-6">
-          <AgentSelector value={agentId} onChange={setAgentId} />
         </div>
 
         {hasData ? (
