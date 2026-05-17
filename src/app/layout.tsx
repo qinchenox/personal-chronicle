@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { FeedbackButton } from "@/components/FeedbackButton";
+import { ThemeMusic } from "@/components/ThemeMusic";
 
 export const metadata: Metadata = {
   title: "人生旅途 — AI 驱动的个人品牌网站生成器",
@@ -16,6 +17,7 @@ export default function RootLayout({
     <html lang="zh-CN">
       <body className="min-h-screen bg-[#fafafa] text-[#0a0a0a] antialiased">
         {children}
+        <ThemeMusic />
         <FeedbackButton />
       </body>
     </html>
