@@ -15,6 +15,14 @@ export interface SkillCategory {
   items: string[];
 }
 
+export interface MediaItem {
+  id: string;
+  type: "image" | "video";
+  url: string;        // data: URL or external URL
+  caption?: string;
+  thumbnail?: string;  // for videos
+}
+
 export interface ExperienceEntry {
   id: string;
   company: string;
@@ -23,6 +31,7 @@ export interface ExperienceEntry {
   endDate: string;
   summary: string;
   highlights: string[];
+  media: MediaItem[];
 }
 
 export interface EducationEntry {
@@ -40,6 +49,19 @@ export interface ProjectEntry {
   description: string;
   url: string;
   highlights: string[];
+  media: MediaItem[];
+}
+
+export interface ResumeBasics {
+  name: string;
+  title: string;
+  email: string;
+  phone: string;
+  location: string;
+  website: string;
+  summary: string;
+  avatar: string;
+  media: MediaItem[];
 }
 
 export interface LanguageEntry {

@@ -172,16 +172,16 @@ function HeroSection({ onStart, paused }: { onStart: () => void; paused?: boolea
 
         {/* CTA — opens modal */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <button onClick={onStart} className="group relative inline-flex items-center gap-2.5 px-9 py-4 rounded-full text-base font-semibold transition-all duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-teal-500 active:scale-95"
-            style={{background:"linear-gradient(135deg, #0f766e 0%, #14b8a6 50%, #2dd4bf 100%)",color:"#fff",boxShadow:"0 4px 20px rgba(13,148,136,0.25), 0 1px 3px rgba(0,0,0,0.06)",minHeight:"52px"}}
-            onMouseEnter={(e)=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 8px 32px rgba(13,148,136,0.35), 0 2px 6px rgba(0,0,0,0.08)"}}
-            onMouseLeave={(e)=>{e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="0 4px 20px rgba(13,148,136,0.25), 0 1px 3px rgba(0,0,0,0.06)"}}
+          <button onClick={onStart} className="group relative inline-flex items-center gap-3 px-10 py-5 rounded-full text-lg font-bold transition-all duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-yellow-400 active:scale-95 shadow-xl"
+            style={{background:"linear-gradient(135deg, #f59e0b 0%, #f97316 50%, #ef4444 100%)",color:"#fff",boxShadow:"0 4px 24px rgba(245,158,11,0.4), 0 2px 8px rgba(0,0,0,0.15)",minHeight:"56px"}}
+            onMouseEnter={(e)=>{e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 8px 36px rgba(245,158,11,0.5), 0 4px 12px rgba(0,0,0,0.2)"}}
+            onMouseLeave={(e)=>{e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="0 4px 24px rgba(245,158,11,0.4), 0 2px 8px rgba(0,0,0,0.15)"}}
           >
-            <span className="relative z-10">{t("home.cta")}</span>
-            <svg className="relative z-10 group-hover:translate-x-0.5 transition-transform duration-300" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            <span className="relative z-10 drop-shadow-sm">{t("home.cta")}</span>
+            <svg className="relative z-10 group-hover:translate-x-0.5 transition-transform duration-300" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </button>
-          <button onClick={onStart} className="inline-flex items-center gap-2 px-7 py-4 rounded-full text-sm font-medium transition-all duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-teal-400 hover:-translate-y-0.5 active:scale-95"
-            style={{background:"rgba(255,255,255,0.7)",border:"1px solid rgba(13,148,136,0.2)",color:"#0f766e",backdropFilter:"blur(12px)",WebkitBackdropFilter:"blur(12px)",minHeight:"52px"}}>
+          <button onClick={onStart} className="inline-flex items-center gap-2 px-9 py-5 rounded-full text-lg font-semibold transition-all duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neutral-400 hover:-translate-y-0.5 active:scale-95 shadow-lg"
+            style={{background:"#fff",border:"2px solid #e2e8f0",color:"#1e293b",minHeight:"56px",boxShadow:"0 4px 16px rgba(0,0,0,0.1)"}}>
             {t("home.learnMore")}
           </button>
         </div>

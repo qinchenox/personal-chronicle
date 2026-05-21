@@ -2,7 +2,7 @@
 
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { ResumeData, ResumeBasics, SkillCategory, ExperienceEntry, EducationEntry, ProjectEntry, LanguageEntry, CertificationEntry } from "@/lib/types";
+import { ResumeData, ResumeBasics, MediaItem, SkillCategory, ExperienceEntry, EducationEntry, ProjectEntry, LanguageEntry, CertificationEntry } from "@/lib/types";
 import { EMPTY_RESUME } from "@/lib/constants";
 import { nanoid } from "nanoid";
 
@@ -74,13 +74,16 @@ interface ResumeStore {
 
   setTheme: (themeId: string) => void;
 
+  addMedia: (section: "projects"|"experience"|"basics", entryId: string, media: { type: "image"|"video"; url: string; caption?: string }) => void;
+  removeMedia: (section: "projects"|"experience"|"basics", entryId: string, mediaId: string) => void;
+
   reset: () => void;
 }
 
 const emptySkill = (): SkillCategory => ({ id: nanoid(8), category: "", items: [] });
-const emptyExperience = (): ExperienceEntry => ({ id: nanoid(8), company: "", position: "", startDate: "", endDate: "", summary: "", highlights: [] });
+const emptyExperience = (): ExperienceEntry => ({ id: nanoid(8), company: "", position: "", startDate: "", endDate: "", summary: "", highlights: [], media: [] });
 const emptyEducation = (): EducationEntry => ({ id: nanoid(8), institution: "", degree: "", field: "", startDate: "", endDate: "" });
-const emptyProject = (): ProjectEntry => ({ id: nanoid(8), name: "", description: "", url: "", highlights: [] });
+const emptyProject = (): ProjectEntry => ({ id: nanoid(8), name: "", description: "", url: "", highlights: [], media: [] });
 const emptyLanguage = (): LanguageEntry => ({ id: nanoid(8), language: "", proficiency: "" });
 const emptyCertification = (): CertificationEntry => ({ id: nanoid(8), name: "", issuer: "", date: "" });
 
@@ -183,6 +186,25 @@ export const useResumeStore = create<ResumeStore>()(
           data: { ...s.data, certifications: s.data.certifications.map((c) => (c.id === id ? { ...c, [field]: value } : c)) },
         })),
 
+      addMedia: (section, entryId, mediaItem) => {
+        const media = { ...mediaItem, id: nanoid(8), thumbnail: mediaItem.type === "video" ? mediaItem.url : undefined } as const;
+        set((s) => {
+          if (section === "basics") {
+            const prev = s.data.basics.media || [];
+            return { data: { ...s.data, basics: { ...s.data.basics, media: [...prev, media] } } };
+          }
+          const key = section as "projects" | "experience";
+          const list = s.data[key] as (ProjectEntry | ExperienceEntry)[];
+          return { data: { ...s.data, [key]: list.map((e: ProjectEntry | ExperienceEntry) => e.id === entryId ? { ...e, media: [...(e.media || []), media] } : e) } };
+        });
+      },
+      removeMedia: (section, entryId, mediaId) =>
+        set((s) => {
+          if (section === "basics") return { data: { ...s.data, basics: { ...s.data.basics, media: (s.data.basics.media || []).filter((m: MediaItem) => m.id !== mediaId) } } };
+          const key = section as "projects" | "experience";
+          const list = s.data[key] as (ProjectEntry | ExperienceEntry)[];
+          return { data: { ...s.data, [key]: list.map((e: ProjectEntry | ExperienceEntry) => e.id === entryId ? { ...e, media: (e.media || []).filter((m: MediaItem) => m.id !== mediaId) } : e) } };
+        }),
       setTheme: (themeId) => set((s) => ({ data: { ...s.data, themeId } })),
 
       reset: () => set({ data: EMPTY_RESUME, status: "empty", error: null, warnings: [] }),
@@ -190,6 +212,15 @@ export const useResumeStore = create<ResumeStore>()(
     {
       name: "life-journey-resume",
       storage: createJSONStorage(() => sessionStorage),
+      merge: (persisted, current) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const p = persisted as any;
+        const d = p.data || {};
+        if (d.basics && !d.basics.media) d.basics.media = [];
+        (d.experience || []).forEach((e: Record<string, unknown>) => { if (!e.media) e.media = []; });
+        (d.projects || []).forEach((e: Record<string, unknown>) => { if (!e.media) e.media = []; });
+        return { ...current, ...p };
+      },
       partialize: (state) => ({
         data: state.data,
         status: state.status,

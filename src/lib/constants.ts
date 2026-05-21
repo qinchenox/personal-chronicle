@@ -10,6 +10,7 @@ export const EMPTY_RESUME: ResumeData = {
     website: "",
     summary: "",
     avatar: "",
+    media: [],
   },
   skills: [],
   experience: [],

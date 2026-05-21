@@ -15,15 +15,16 @@ const basicsSchema = z.object({
   website: z.string(),
   summary: z.string(),
   avatar: z.string(),
-});
+  media: z.array(z.any()).optional(),
+}).passthrough();
 
-const resumeDataSchema: z.ZodType<ResumeData> = z.object({
+const resumeDataSchema = z.object({
   basics: basicsSchema,
   skills: z.array(z.object({
     id: z.string(),
     category: z.string(),
     items: z.array(z.string()),
-  })),
+  }).passthrough()),
   experience: z.array(z.object({
     id: z.string(),
     company: z.string(),
@@ -32,7 +33,7 @@ const resumeDataSchema: z.ZodType<ResumeData> = z.object({
     endDate: z.string(),
     summary: z.string(),
     highlights: z.array(z.string()),
-  })),
+  }).passthrough()),
   education: z.array(z.object({
     id: z.string(),
     institution: z.string(),
@@ -47,7 +48,7 @@ const resumeDataSchema: z.ZodType<ResumeData> = z.object({
     description: z.string(),
     url: z.string(),
     highlights: z.array(z.string()),
-  })),
+  }).passthrough()),
   languages: z.array(z.object({
     id: z.string(),
     language: z.string(),
@@ -60,7 +61,7 @@ const resumeDataSchema: z.ZodType<ResumeData> = z.object({
     date: z.string(),
   })),
   themeId: z.string(),
-});
+}).passthrough();
 
 export async function POST(request: NextRequest) {
   try {
@@ -74,7 +75,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const html = generatePortfolioHTML(parsed.data);
+    const html = generatePortfolioHTML(parsed.data as unknown as ResumeData);
     const id = nanoid(10);
     const publicDir = join(process.cwd(), "public", "p");
     if (!existsSync(publicDir)) {

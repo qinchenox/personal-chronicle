@@ -12,9 +12,10 @@ const basicsSchema = z.object({
   website: z.string(),
   summary: z.string(),
   avatar: z.string(),
-});
+  media: z.array(z.any()).optional(),
+}).passthrough();
 
-const resumeDataSchema: z.ZodType<ResumeData> = z.object({
+const resumeDataSchema = z.object({
   basics: basicsSchema,
   skills: z.array(z.object({
     id: z.string(),
@@ -29,7 +30,7 @@ const resumeDataSchema: z.ZodType<ResumeData> = z.object({
     endDate: z.string(),
     summary: z.string(),
     highlights: z.array(z.string()),
-  })),
+  }).passthrough()),
   education: z.array(z.object({
     id: z.string(),
     institution: z.string(),
@@ -44,7 +45,7 @@ const resumeDataSchema: z.ZodType<ResumeData> = z.object({
     description: z.string(),
     url: z.string(),
     highlights: z.array(z.string()),
-  })),
+  }).passthrough()),
   languages: z.array(z.object({
     id: z.string(),
     language: z.string(),
@@ -71,7 +72,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const html = generatePortfolioHTML(parsed.data);
+    const html = generatePortfolioHTML(parsed.data as unknown as ResumeData);
     const name = parsed.data.basics.name || "个人主页";
     const safeName = encodeURIComponent(`${name}-个人主页.html`);
 

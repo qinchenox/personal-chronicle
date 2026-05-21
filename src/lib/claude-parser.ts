@@ -79,6 +79,7 @@ function mergeWithDefaults(
       website: b.website || "",
       summary: b.summary || "",
       avatar: b.avatar || "",
+      media: ((b as unknown as Record<string, unknown>).media as ResumeData["basics"]["media"]) || [],
     };
     if (!b.name) warnings.push("未检测到姓名。");
     if (!b.email && !b.phone) warnings.push("未检测到联系方式。");
