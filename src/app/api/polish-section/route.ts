@@ -28,18 +28,21 @@ export async function POST(request: NextRequest) {
       ? `${promptKey}\n\nIMPORTANT: Respond in English. Return only the polished result, no explanations.`
       : `${promptKey}\n\n只返回润色后的结果，不要加引号或解释。`;
 
-    const response = await fetch(`${CLAUDE_URL}/v1/messages`, {
+    // Use OpenAI-compatible format (works with DashScope, Anthropic, and other providers)
+    const response = await fetch(`${CLAUDE_URL}/chat/completions`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": CLAUDE_KEY,
-        "anthropic-version": "2023-06-01",
+        "Authorization": `Bearer ${CLAUDE_KEY}`,
       },
       body: JSON.stringify({
         model: CLAUDE_MODEL,
         max_tokens: 1024,
-        system: systemPrompt,
-        messages: [{ role: "user", content: `请优化以下内容：\n\n${content}` }],
+        temperature: 0.4,
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: `请优化以下内容：\n\n${content}` },
+        ],
       }),
     });
 
@@ -49,8 +52,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "AI 服务暂时不可用" }, { status: 502 });
     }
 
-    const json = await response.json();
-    const polished = json.content?.[0]?.text || "";
+    const json = await response.json() as { choices: Array<{ message: { content: string } }> };
+    const polished = json.choices?.[0]?.message?.content || "";
 
     return NextResponse.json({ success: true, polished: polished.trim() });
   } catch (error) {
