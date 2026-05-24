@@ -1,9 +1,10 @@
 # 人生旅途 · Life Journey
 
-> AI 驱动的个人品牌网站生成器 — 上传简历，智能润色，一键生成现代个人主页。
+> AI 驱动的个人品牌网站生成器 — 上传简历，智能润色，一键部署生成现代个人主页。
 
-[![Version](https://img.shields.io/badge/version-v2.2-teal)](https://github.com/qinchenox/life-journey)
+[![Version](https://img.shields.io/badge/version-v3.1-teal)](https://github.com/qinchenox/life-journey)
 [![License](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
+[![Deploy](https://img.shields.io/badge/deploy-life--journey--omega.vercel.app-blue)](https://life-journey-omega.vercel.app)
 
 ---
 
@@ -11,11 +12,11 @@
 
 ### 核心流程
 - **视频品牌首页** — 森林路径视频背景，视差交互，打字机轮播，暗色渐变叠加层
-- **中英双语** — 全站 i18n 国际化，Header 一键切换，cookie 持久化语言偏好
+- **中英双语** — 全站 i18n 国际化，Header 一键切换，cookie 持久化语言偏好，编辑/预览组件全覆盖
 - **上传即解析** — 拖拽 PDF/DOCX，5 种 AI Agent 风格提取并润色结构化信息
+- **智能编辑** — SectionCard 卡片布局、AI 逐段润色、富媒体附件上传、编辑/预览模式切换
 - **补充资料** — 编辑页侧栏上传项目文档/证书，AI 智能合并至简历
-- **自由编辑** — 校对修正 AI 结果，增删调整全部模块
-- **一键发布** — 生成自包含 HTML，部署后生成二维码，扫码即可分享
+- **一键发布到公网** — Vercel SDK 集成，真正部署到 Vercel CDN，生成独立 `.vercel.app` 域名，扫码即可访问（无 Vercel Token 时自动回退本地模式）
 
 ### AI 智能体系统
 5 个专属 Agent：**技术极客** · **创意大师** · **商务精英** · **学术严谨** · **通用全能**
@@ -29,11 +30,11 @@ AI 自动生成 4 类专业报告（中英双语）：
 - **工作白皮书** — 专业文档（摘要-方法论-关键发现-发展建议）
 - **求职材料** — 求职信、演讲稿、LinkedIn 摘要
 
-### 安全加固（V2.1）
+### 安全加固
 - PayJS 支付回调签名校验，防伪造升级
 - API 路由 JWT 认证，防越权读取
 - JWT_SECRET 启动时默认值检查告警
-- 空 catch 块替换为 console.error
+- Guest 路径无效 token 静默清除（不再强制重定向）
 
 ### SEO + 加载体验
 - Open Graph / Twitter Card 元标签（动态多语言）
@@ -47,7 +48,7 @@ AI 自动生成 4 类专业报告（中英双语）：
 - 预览 Tab 栏滚动渐隐指示 + 触控优化
 
 ### 设计特性
-- 柔和淡青色配色，暖白基调
+- 柔和淡青色配色，暖白基调，暖色 CTA 渐变
 - 时间线式工作经历，项目卡片网格
 - 暗色模式自适应、打印样式
 - 入场动画、滚动渐显、玻璃拟态
@@ -71,6 +72,7 @@ AI 自动生成 4 类专业报告（中英双语）：
 | 认证 | JWT (jose) + bcryptjs |
 | AI | Anthropic SDK / OpenAI 兼容 |
 | 国际化 | 自建 i18n 引擎（cookie + middleware） |
+| 部署 | Vercel SDK（`@vercel/sdk`）|
 | 支付 | PayJS 微信支付 |
 
 ---
@@ -90,8 +92,8 @@ npm run dev                        # http://localhost:3000
 | `ANTHROPIC_API_KEY` | AI API Key | — |
 | `LLM_BASE_URL` | LLM API 地址 | — |
 | `LLM_MODEL` | 模型名称 | `qwen-plus` |
-| `JWT_SECRET` | JWT 签名密钥 | 随机生成（生产必改） |
-| `NEXT_PUBLIC_LOCALE` | 默认语言 | `zh` |
+| `JWT_SECRET` | JWT 签名密钥 | 开发默认（生产必改） |
+| `VERCEL_TOKEN` | Vercel API Token | 缺失时回退本地模式 |
 | `NEXT_PUBLIC_BASE_URL` | 部署域名 | `http://localhost:3000` |
 
 ---
@@ -100,9 +102,10 @@ npm run dev                        # http://localhost:3000
 
 1. 首页选择 AI 风格 → 点击「开始创建」
 2. 拖拽 PDF/DOCX → AI 解析润色 → 自动进入编辑页
-3. 右侧边栏上传补充材料，AI 实时合并
-4. 预览页切换 Tab 查看效果，生成专业报告
-5. 下载 HTML 或一键发布，扫码分享
+3. 逐段校对 AI 结果，使用「AI 智能润色」精修各模块
+4. 右侧边栏上传补充材料，AI 实时合并
+5. 预览页切换 Tab 查看效果，生成专业报告
+6. 点击「发布上线」→ 自动部署到 Vercel → 获得公网链接 + 二维码
 
 ---
 
@@ -116,7 +119,7 @@ src/
 │   ├── preview/page.tsx       # 预览页 + Tab 报告
 │   ├── login/page.tsx         # 登录注册
 │   ├── pricing/page.tsx       # 定价页
-│   └── api/                   # API 路由（12 个）
+│   └── api/                   # API 路由（14 个）
 ├── i18n/                      # 国际化模块
 │   ├── index.ts               # 客户端引擎（t/tv/useLocale）
 │   ├── server.ts              # 服务端引擎（serverT）
@@ -125,9 +128,9 @@ src/
 │   └── en.ts                  # 英文词典
 ├── components/
 │   ├── upload/                # 文件上传
-│   ├── edit/                  # 编辑表单 + sections
-│   ├── preview/               # 预览器 + 报告编辑器
-│   └── layout/                # Header（含语言切换）
+│   ├── edit/                  # 编辑表单 + sections + SectionCard + MediaAttachment
+│   ├── preview/               # 预览器 + 报告编辑器 + PortfolioPreview
+│   └── layout/                # Header（含语言切换 + Hydration 安全）
 ├── templates/portfolio/       # 生成页模板
 ├── lib/
 │   ├── agents/                # 5 个 AI Agent（中英双 Prompt）
@@ -135,9 +138,11 @@ src/
 │   ├── auth.ts                # JWT + bcrypt
 │   ├── claude-parser.ts       # AI 解析
 │   ├── html-generator.ts      # HTML 生成（多语言标签）
+│   ├── vercel-deploy.ts       # Vercel SDK 部署封装
+│   ├── validators.ts          # Zod schema 共享
 │   └── themes.ts              # 主题系统
 ├── store/                     # Zustand 状态管理
-└── middleware.ts               # 认证 + 语言检测
+└── middleware.ts               # 认证 + 语言检测 + Guest 路径
 ```
 
 ---
@@ -146,16 +151,18 @@ src/
 
 | 版本 | 日期 | 内容 |
 |------|------|------|
-| **V2.2** | 2026-05 | 中英双语国际化、视频背景、多语言 AI Prompt、语言切换 |
+| **V3.1** | 2026-05 | Vercel SDK 自动部署、深层 i18n（8 组件全覆盖）、Hydration 修复、Middleware Guest 路径优化 |
+| V3.0 | 2026-05 | V2.3 编辑页互动升级（SectionCard、MediaAttachment、AI 逐段润色） |
+| V2.2 | 2026-05 | 中英双语国际化、视频背景、多语言 AI Prompt、语言切换 |
 | V2.1 | 2026-05 | 安全加固（PayJS 签名 + JWT 认证）、SEO、移动端适配 |
 | V2.0 | — | 订阅制盈利、Vercel 部署、主题音乐 |
 | V1.0 | — | 核心功能：上传解析、5 Agent、HTML 生成、SQLite 存储 |
 
 ## 部署
 
-推荐 Vercel 一键部署：
-
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/qinchenox/life-journey)
+
+在线体验：**[life-journey-omega.vercel.app](https://life-journey-omega.vercel.app)**
 
 设置上述环境变量后即可上线。也支持 Docker 或任意 Node.js 服务器。
 
