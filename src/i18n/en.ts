@@ -143,6 +143,12 @@ export const en = {
       uploadHint: "Drag & drop or click to upload PDF/DOCX/TXT",
       merging: "AI is analyzing supplement materials...",
       empty: "No supplement materials uploaded yet",
+      urlInput: "Or paste a link",
+      urlPlaceholder: "Paste a URL (LinkedIn, blog, project page, etc.)",
+      urlFetch: "Extract",
+      urlFetching: "Fetching and analyzing webpage...",
+      urlSuccess: "Webpage content analyzed and merged into resume",
+      urlError: "Unable to fetch this link. Please check the URL or paste text manually.",
     },
     supplementMsg: {
       success: "Successfully merged, resume data updated.",

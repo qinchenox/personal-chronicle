@@ -143,6 +143,12 @@ export const zh = {
       uploadHint: "拖拽或点击上传 PDF/DOCX/TXT",
       merging: "AI 正在分析补充资料...",
       empty: "尚未上传补充资料",
+      urlInput: "或粘贴链接",
+      urlPlaceholder: "粘贴网页链接（如 LinkedIn、个人博客、项目页）",
+      urlFetch: "提取链接",
+      urlFetching: "正在抓取并分析网页内容...",
+      urlSuccess: "网页内容已分析并合并至简历",
+      urlError: "无法抓取该链接，请检查地址或手动粘贴文本",
     },
     supplementMsg: {
       success: "已成功合并，简历数据已更新。",

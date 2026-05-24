@@ -23,6 +23,41 @@ export function SupplementPanel() {
   const [dragover, setDragover] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // URL input
+  const [urlInput, setUrlInput] = useState("");
+  const [urlFetching, setUrlFetching] = useState(false);
+
+  const handleUrlFetch = useCallback(async () => {
+    const trimmed = urlInput.trim();
+    if (!trimmed) return;
+    setError(null);
+    setResult(null);
+    setUrlFetching(true);
+    try {
+      const res = await fetch("/api/supplement-url", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          url: trimmed,
+          currentData: JSON.stringify(data),
+          agentId,
+        }),
+      });
+      const json = await res.json();
+      if (!res.ok || !json.success) {
+        setError(json.error || t("edit.supplementPanel.urlError"));
+        setUrlFetching(false);
+        return;
+      }
+      setData(json.data);
+      setResult(t("edit.supplementPanel.urlSuccess"));
+      setUrlInput("");
+    } catch {
+      setError(t("edit.supplementPanel.urlError"));
+    }
+    setUrlFetching(false);
+  }, [urlInput, data, agentId, setData]);
+
   const handleFile = useCallback(async (f: File) => {
     const allowed = [
       "application/pdf",
@@ -127,6 +162,29 @@ export function SupplementPanel() {
               {t("edit.supplementPanel.uploadHint")}
             </p>
             <p className="text-xs text-neutral-400 mt-0.5">{t("upload.formats")}</p>
+          </div>
+
+          {/* URL input */}
+          <div className="space-y-2">
+            <p className="text-xs font-medium text-neutral-500">{t("edit.supplementPanel.urlInput")}</p>
+            <div className="flex gap-2">
+              <input
+                type="url"
+                value={urlInput}
+                onChange={(e) => setUrlInput(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter") handleUrlFetch(); }}
+                placeholder={t("edit.supplementPanel.urlPlaceholder")}
+                className="flex-1 px-3 py-1.5 text-xs border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent"
+                disabled={urlFetching}
+              />
+              <button
+                onClick={handleUrlFetch}
+                disabled={urlFetching || !urlInput.trim()}
+                className="px-3 py-1.5 text-xs font-medium rounded-lg bg-accent text-white hover:opacity-90 disabled:opacity-40 transition-opacity whitespace-nowrap"
+              >
+                {urlFetching ? t("edit.supplementPanel.urlFetching") : t("edit.supplementPanel.urlFetch")}
+              </button>
+            </div>
           </div>
 
           {merging && (
