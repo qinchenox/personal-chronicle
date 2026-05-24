@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import type { MediaItem } from "@/lib/types";
+import { t, tv } from "@/i18n";
 
 interface Props {
   media: MediaItem[];
@@ -35,7 +36,7 @@ export function MediaAttachment({ media, onAdd, onRemove }: Props) {
           className="inline-flex items-center gap-1 text-xs text-neutral-400 hover:text-accent transition-colors"
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
-          添加图片/视频
+          {t("edit.media.add")}
         </button>
         <input ref={fileRef} type="file" accept="image/*,video/*" onChange={handleFile} className="hidden" />
         {media.length > 0 && (
@@ -44,7 +45,7 @@ export function MediaAttachment({ media, onAdd, onRemove }: Props) {
             onClick={() => setExpanded(!expanded)}
             className="text-xs text-neutral-400 hover:text-neutral-600 transition-colors"
           >
-            {expanded ? "收起" : `${media.length} 个附件`}
+            {expanded ? t("edit.media.collapse") : (tv("edit.media.count") as (n: number) => string)(media.length)}
           </button>
         )}
       </div>

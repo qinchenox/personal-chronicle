@@ -81,7 +81,7 @@ export function FeedbackButton() {
                   className="w-full py-2.5 rounded-xl text-sm font-medium text-white transition-all hover:opacity-90 disabled:opacity-60"
                   style={{ background: "linear-gradient(135deg, #0f766e, #14b8a6)" }}
                 >
-                  {loading ? "提交中..." : t("feedback.submit")}
+                  {loading ? t("auth.processing") : t("feedback.submit")}
                 </button>
               </form>
             )}

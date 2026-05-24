@@ -1,6 +1,7 @@
 "use client";
 
 import { useResumeStore } from "@/store/resume-store";
+import { t } from "@/i18n";
 
 export function SkillsSection() {
   const skills = useResumeStore((s) => s.data.skills);
@@ -11,17 +12,17 @@ export function SkillsSection() {
   return (
     <section className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-neutral-800">技能</h3>
+        <h3 className="text-lg font-semibold text-neutral-800">{t("edit.sections.skillsTitle")}</h3>
         <button
           onClick={add}
           className="text-sm text-accent hover:underline"
         >
-          + 添加技能类别
+          + {t("edit.sections.addSkills")}
         </button>
       </div>
       {skills.length === 0 && (
         <p className="text-sm text-neutral-400 py-4 text-center border border-dashed rounded-lg">
-          暂无技能信息。点击上方按钮添加，或从简历中自动解析。
+          {t("edit.sections.skillsEmpty")}
         </p>
       )}
       <div className="space-y-6">
@@ -38,7 +39,7 @@ export function SkillsSection() {
                 onClick={() => remove(cat.id)}
                 className="text-sm text-red-400 hover:text-red-600 transition-colors"
               >
-                删除
+                {t("edit.form.remove")}
               </button>
             </div>
             <textarea

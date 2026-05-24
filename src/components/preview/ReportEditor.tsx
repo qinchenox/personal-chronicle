@@ -2,18 +2,19 @@
 
 import { useState } from "react";
 import { GeneratedReport } from "@/lib/types";
+import { t } from "@/i18n";
+
+const REPORT_TYPE_KEY: Record<string, string> = {
+  "project-case": "projectCase",
+  "industry-brief": "industryBrief",
+  "whitepaper": "whitepaper",
+  "job-material": "jobMaterial",
+};
 
 interface ReportEditorProps {
   report: GeneratedReport;
   onUpdate: (id: string, content: string) => void;
 }
-
-const TYPE_LABELS: Record<string, string> = {
-  "project-case": "项目案例",
-  "industry-brief": "行业简报",
-  "whitepaper": "工作白皮书",
-  "job-material": "求职材料",
-};
 
 export function ReportEditor({ report, onUpdate }: ReportEditorProps) {
   const [editing, setEditing] = useState(false);
@@ -42,7 +43,7 @@ export function ReportEditor({ report, onUpdate }: ReportEditorProps) {
       <div className="flex items-center justify-between px-5 py-3 bg-neutral-50 border-b border-neutral-100">
         <div>
           <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-accent/10 text-accent">
-            {TYPE_LABELS[report.type] || report.type}
+            {t(`reports.${REPORT_TYPE_KEY[report.type] || report.type}` as Parameters<typeof t>[0])}
           </span>
           <h3 className="text-base font-semibold text-neutral-800 mt-1">{report.title}</h3>
         </div>
@@ -51,13 +52,13 @@ export function ReportEditor({ report, onUpdate }: ReportEditorProps) {
             onClick={() => setEditing(!editing)}
             className="px-3 py-1.5 text-xs rounded-lg border border-neutral-300 text-neutral-600 hover:bg-neutral-100 transition-colors"
           >
-            {editing ? "取消" : "编辑"}
+            {editing ? t("report.cancel") : t("report.edit")}
           </button>
           <button
             onClick={handleDownload}
             className="px-3 py-1.5 text-xs rounded-lg bg-neutral-800 text-white hover:bg-neutral-700 transition-colors"
           >
-            下载 .md
+            {t("report.downloadMd")}
           </button>
         </div>
       </div>
@@ -75,7 +76,7 @@ export function ReportEditor({ report, onUpdate }: ReportEditorProps) {
               onClick={handleSave}
               className="px-4 py-2 text-sm rounded-lg bg-accent text-white hover:opacity-90 transition-opacity"
             >
-              保存修改
+              {t("report.save")}
             </button>
           </div>
         ) : (
@@ -102,5 +103,11 @@ function renderMarkdown(md: string): string {
     .replace(/^(.+)$/gm, (m) => m.startsWith("<") ? m : `<p class="mb-3">${m}</p>`);
 }
 
-/* Export for shared tab config */
+// Static labels for non-component use (tab configuration)
+const TYPE_LABELS: Record<string, string> = {
+  "project-case": "项目案例",
+  "industry-brief": "行业简报",
+  "whitepaper": "工作白皮书",
+  "job-material": "求职材料",
+};
 export { TYPE_LABELS };

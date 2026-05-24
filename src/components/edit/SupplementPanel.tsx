@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback } from "react";
 import { useResumeStore } from "@/store/resume-store";
+import { t } from "@/i18n";
 
 interface SupplementFile {
   id: string;
@@ -28,11 +29,11 @@ export function SupplementPanel() {
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     ];
     if (!allowed.includes(f.type) && !f.name.match(/\.(pdf|docx)$/i)) {
-      setError("仅支持 PDF 和 DOCX 格式。");
+      setError(t("upload.invalidFormat"));
       return;
     }
     if (f.size > 10 * 1024 * 1024) {
-      setError("文件大小不能超过 10MB。");
+      setError(t("upload.fileTooLarge"));
       return;
     }
 
@@ -52,7 +53,7 @@ export function SupplementPanel() {
       });
       const json = await res.json();
       if (!res.ok || !json.success) {
-        setError(json.error || "合并失败");
+        setError(json.error || t("edit.supplementMsg.failed"));
         setMerging(false);
         return;
       }
@@ -66,9 +67,9 @@ export function SupplementPanel() {
         },
         ...prev,
       ]);
-      setResult("已成功合并，简历数据已更新。");
+      setResult(t("edit.supplementMsg.success"));
     } catch {
-      setError("网络错误，合并失败。");
+      setError(t("states.networkError"));
     }
     setMerging(false);
   }, [data, agentId, setData]);
@@ -93,7 +94,7 @@ export function SupplementPanel() {
         onClick={() => setCollapsed(!collapsed)}
         className="w-full flex items-center justify-between px-4 py-3 bg-neutral-50 hover:bg-neutral-100 transition-colors"
       >
-        <span className="text-sm font-medium text-neutral-700">补充资料</span>
+        <span className="text-sm font-medium text-neutral-700">{t("edit.supplementPanel.title")}</span>
         <span className={`text-xs text-neutral-400 transition-transform ${collapsed ? "" : "rotate-180"}`}>
           ▼
         </span>
@@ -102,7 +103,7 @@ export function SupplementPanel() {
       {!collapsed && (
         <div className="p-4 space-y-3">
           <p className="text-xs text-neutral-400">
-            上传项目文档、证书、自述等，AI 将自动合并到当前简历中。
+            {t("edit.supplementPanel.description")}
           </p>
 
           <div
@@ -123,15 +124,15 @@ export function SupplementPanel() {
             />
             <div className="text-lg mb-1">📎</div>
             <p className="text-xs text-neutral-500">
-              拖拽文件或<span className="text-accent">点击上传</span>
+              {t("edit.supplementPanel.uploadHint")}
             </p>
-            <p className="text-xs text-neutral-400 mt-0.5">PDF / DOCX，最大 10MB</p>
+            <p className="text-xs text-neutral-400 mt-0.5">{t("upload.formats")}</p>
           </div>
 
           {merging && (
             <div className="flex items-center gap-2 text-sm text-neutral-500">
               <div className="w-4 h-4 border-2 border-accent border-t-transparent rounded-full animate-spin" />
-              AI 正在分析补充材料...
+              {t("edit.supplementPanel.merging")}
             </div>
           )}
 
@@ -145,7 +146,7 @@ export function SupplementPanel() {
 
           {files.length > 0 && (
             <div className="space-y-1.5">
-              <p className="text-xs font-medium text-neutral-500">已上传</p>
+              <p className="text-xs font-medium text-neutral-500">{t("edit.supplementMsg.uploaded")}</p>
               {files.map((f) => (
                 <div key={f.id} className="flex items-center justify-between text-xs text-neutral-600 bg-neutral-50 rounded px-2 py-1.5">
                   <span className="truncate flex-1">{f.name}</span>

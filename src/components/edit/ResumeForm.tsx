@@ -8,6 +8,7 @@ import { EducationSection } from "./sections/EducationSection";
 import { ProjectsSection } from "./sections/ProjectsSection";
 import { useResumeStore } from "@/store/resume-store";
 import { THEMES, DEFAULT_THEME_ID } from "@/lib/themes";
+import { t } from "@/i18n";
 
 function ThemeSelector() {
   const themeId = useResumeStore((s) => s.data.themeId);
@@ -15,8 +16,8 @@ function ThemeSelector() {
 
   return (
     <section className="space-y-3">
-      <h3 className="text-lg font-semibold text-neutral-800">风格主题</h3>
-      <p className="text-sm text-neutral-400">AI 根据岗位自动匹配，也可手动切换</p>
+      <h3 className="text-lg font-semibold text-neutral-800">{t("edit.theme.label")}</h3>
+      <p className="text-sm text-neutral-400">{t("edit.theme.desc")}</p>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
         {Object.values(THEMES).map((t) => (
           <button
@@ -55,14 +56,14 @@ export function ResumeForm() {
   if (!hasData) {
     return (
       <div className="max-w-xl mx-auto text-center py-20">
-        <p className="text-lg text-neutral-500 mb-4">尚未上传简历或解析数据为空。</p>
+        <p className="text-lg text-neutral-500 mb-4">{t("edit.noDataYet")}</p>
         <button
           onClick={() => router.push("/")}
           className="text-accent hover:underline"
         >
-          返回上传简历
+          {t("edit.backToUpload")}
         </button>
-        <p className="text-sm text-neutral-400 mt-4">也可手动填写以下信息创建个人主页。</p>
+        <p className="text-sm text-neutral-400 mt-4">{t("edit.fillManually")}</p>
         <div className="mt-8">
           <FormContent />
         </div>
@@ -82,9 +83,9 @@ function FormContent() {
     <div className="max-w-2xl mx-auto">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h2 className="text-xl font-bold text-neutral-800">编辑简历信息</h2>
+          <h2 className="text-xl font-bold text-neutral-800">{t("edit.pageTitle")}</h2>
           <p className="text-sm text-neutral-400 mt-1">
-            AI 解析结果可能有误，请检查并修正以下信息。
+            {t("edit.pageDesc")}
           </p>
         </div>
         <div className="flex gap-3">
@@ -92,13 +93,13 @@ function FormContent() {
             onClick={reset}
             className="text-sm text-neutral-400 hover:text-red-500 transition-colors"
           >
-            清空重填
+            {t("edit.clearAll")}
           </button>
           <button
             onClick={() => router.push("/preview")}
             className="px-4 py-2 bg-[#0a0a0a] text-white text-sm font-medium rounded-lg hover:bg-neutral-800 transition-colors"
           >
-            预览主页
+            {t("edit.previewPage")}
           </button>
         </div>
       </div>
@@ -130,7 +131,7 @@ function FormContent() {
           onClick={() => router.push("/preview")}
           className="px-6 py-3 bg-[#0a0a0a] text-white font-medium rounded-lg hover:bg-neutral-800 transition-colors"
         >
-          预览生成结果
+          {t("edit.previewGen")}
         </button>
       </div>
     </div>

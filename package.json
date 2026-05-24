@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.50.0",
+    "@vercel/sdk": "^1.21.7",
     "bcryptjs": "^3.0.3",
     "better-sqlite3": "^12.10.0",
     "jose": "^6.2.3",

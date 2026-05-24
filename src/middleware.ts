@@ -28,13 +28,14 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next({ request: { headers: requestHeaders } });
   }
 
+  // 编辑、预览、部署允许未登录使用（guest 模式）
+  const isGuestPath = pathname.startsWith("/edit") || pathname.startsWith("/preview") || pathname.startsWith("/api/deploy") || pathname.startsWith("/api/generate-html");
+
   const token = request.cookies.get("token")?.value;
   if (!token) {
-    // 编辑和预览页允许未登录使用（guest 模式），但不保存历史
-    if (pathname.startsWith("/edit") || pathname.startsWith("/preview")) {
+    if (isGuestPath) {
       return NextResponse.next();
     }
-    // API 路由需要认证
     if (pathname.startsWith("/api/resumes") || pathname.startsWith("/api/supplement")) {
       return NextResponse.json({ error: "请先登录" }, { status: 401 });
     }
@@ -45,9 +46,14 @@ export async function middleware(request: NextRequest) {
     const { payload } = await jwtVerify(token, JWT_SECRET);
     requestHeaders.set("x-user-id", payload.userId as string);
     requestHeaders.set("x-user-email", payload.email as string);
-
     return NextResponse.next({ request: { headers: requestHeaders } });
   } catch {
+    // 无效/过期 token：guest 路径放行（清除无效 cookie），其他路径重定向登录
+    if (isGuestPath) {
+      const response = NextResponse.next();
+      response.cookies.delete("token");
+      return response;
+    }
     const response = NextResponse.redirect(new URL("/login", request.url));
     response.cookies.delete("token");
     return response;

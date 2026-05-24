@@ -1,6 +1,7 @@
 "use client";
 
 import { useResumeStore } from "@/store/resume-store";
+import { t } from "@/i18n";
 
 export function EducationSection() {
   const education = useResumeStore((s) => s.data.education);
@@ -11,61 +12,61 @@ export function EducationSection() {
   return (
     <section className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-neutral-800">教育背景</h3>
+        <h3 className="text-lg font-semibold text-neutral-800">{t("edit.sections.educationTitle")}</h3>
         <button
           onClick={add}
           className="text-sm text-accent hover:underline"
         >
-          + 添加教育经历
+          + {t("edit.sections.addEducation")}
         </button>
       </div>
       {education.length === 0 && (
         <p className="text-sm text-neutral-400 py-4 text-center border border-dashed rounded-lg">
-          暂无教育背景。
+          {t("edit.sections.educationEmpty")}
         </p>
       )}
       <div className="space-y-6">
         {education.map((edu) => (
           <div key={edu.id} className="p-4 border border-neutral-200 rounded-lg space-y-3">
             <div className="flex justify-between">
-              <span className="text-sm font-medium text-neutral-500">教育经历</span>
+              <span className="text-sm font-medium text-neutral-500">{t("edit.sections.educationLabel")}</span>
               <button
                 onClick={() => remove(edu.id)}
                 className="text-sm text-red-400 hover:text-red-600"
               >
-                删除
+                {t("edit.form.remove")}
               </button>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <input
                 value={edu.institution}
                 onChange={(e) => update(edu.id, "institution", e.target.value)}
-                placeholder="学校名称"
+                placeholder={t("edit.form.institution")}
                 className="px-3 py-1.5 border border-neutral-200 rounded text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent"
               />
               <input
                 value={edu.degree}
                 onChange={(e) => update(edu.id, "degree", e.target.value)}
-                placeholder="学位（如 本科）"
+                placeholder={t("edit.form.degree")}
                 className="px-3 py-1.5 border border-neutral-200 rounded text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent"
               />
               <input
                 value={edu.field}
                 onChange={(e) => update(edu.id, "field", e.target.value)}
-                placeholder="专业"
+                placeholder={t("edit.form.field")}
                 className="px-3 py-1.5 border border-neutral-200 rounded text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent"
               />
               <div className="flex gap-2">
                 <input
                   value={edu.startDate}
                   onChange={(e) => update(edu.id, "startDate", e.target.value)}
-                  placeholder="开始日期"
+                  placeholder={t("edit.form.startDate")}
                   className="flex-1 px-3 py-1.5 border border-neutral-200 rounded text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent"
                 />
                 <input
                   value={edu.endDate}
                   onChange={(e) => update(edu.id, "endDate", e.target.value)}
-                  placeholder="结束日期"
+                  placeholder={t("edit.form.endDate")}
                   className="flex-1 px-3 py-1.5 border border-neutral-200 rounded text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent"
                 />
               </div>

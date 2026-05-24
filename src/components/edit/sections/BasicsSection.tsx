@@ -83,7 +83,7 @@ export function BasicsSection() {
 
       {/* Avatar / header image */}
       <div className="mt-6">
-        <label className="block text-sm font-medium text-neutral-600 mb-1.5">个人照片或头像</label>
+        <label className="block text-sm font-medium text-neutral-600 mb-1.5">{t("edit.photo.label")}</label>
         <MediaAttachment
           media={basics.media || []}
           onAdd={(item) => addMedia("basics", "", item)}

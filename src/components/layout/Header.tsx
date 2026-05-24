@@ -22,6 +22,10 @@ export function Header({ transparent }: HeaderProps) {
   const setUser = useResumeStore((s) => s.setUser);
   const user = useResumeStore((s) => s.user);
   const router = useRouter();
+  // Defer status-dependent UI until after hydration to avoid mismatch
+  // (server always renders "empty" since sessionStorage is unavailable)
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
     fetch("/api/auth")
@@ -39,17 +43,21 @@ export function Header({ transparent }: HeaderProps) {
     router.refresh();
   };
 
+  // Use server-safe defaults until mounted (prevents hydration mismatch)
+  const effectiveStatus = mounted ? status : "empty";
+  const effectiveLocale = mounted ? useLocale() : "zh";
+
   const currentStep =
-    status === "empty" || status === "uploading" || status === "parsing"
+    effectiveStatus === "empty" || effectiveStatus === "uploading" || effectiveStatus === "parsing"
       ? 0
-      : status === "ready"
+      : effectiveStatus === "ready"
         ? 1
         : 2;
 
   const canAccess = (stepIdx: number) => {
     if (stepIdx === 0) return true;
-    if (stepIdx === 1) return status === "ready" || status === "error";
-    if (stepIdx === 2) return status === "ready" || status === "error";
+    if (stepIdx === 1) return effectiveStatus === "ready" || effectiveStatus === "error";
+    if (stepIdx === 2) return effectiveStatus === "ready" || effectiveStatus === "error";
     return false;
   };
 
@@ -119,14 +127,14 @@ export function Header({ transparent }: HeaderProps) {
           ))}
           <button
             onClick={() => {
-              const next = useLocale() === "zh" ? "en" : "zh";
+              const next = effectiveLocale === "zh" ? "en" : "zh";
               setLocaleCookie(next);
               window.location.reload();
             }}
             className="text-xs px-2 py-1 rounded border border-neutral-200 hover:bg-neutral-50 transition-colors"
-            title={useLocale() === "zh" ? "Switch to English" : "切换到中文"}
+            title={effectiveLocale === "zh" ? "Switch to English" : "切换到中文"}
           >
-            {useLocale() === "zh" ? "EN" : "中"}
+            {effectiveLocale === "zh" ? "EN" : "中"}
           </button>
           {user ? (
             <div className="flex items-center gap-2">
